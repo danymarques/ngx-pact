@@ -6,4 +6,5 @@ export interface Schema {
   log: string;
   pactBinaryLocation?: string;
   pactDoNotTrack?: boolean;
+  testFramework: string;
 }

@@ -1,10 +1,11 @@
 import { getWorkspace } from './config';
 import { Tree } from '@angular-devkit/schematics';
 import { experimental } from '@angular-devkit/core';
+import { prompt } from 'inquirer';
 
 export type WorkspaceProject = experimental.workspace.WorkspaceProject;
 
-type TestFramework = 'jest' | 'karma';
+export type TestFramework = 'jest' | 'karma';
 
 export function getProject(
   host: Tree,
@@ -58,4 +59,16 @@ export function getProjetTestFramework(
   const project = getProject(host, options);
 
   return project.architect?.test.builder.includes('jest') ? 'jest' : 'karma';
+}
+
+export async function promptForTestFramework(): Promise<TestFramework> {
+  return new Promise<TestFramework>((resolve, reject) => {
+    prompt({
+      type: 'list',
+      name: 'testFramework',
+      message: `Unable to detect automatically the test framework you're using.\nPlease select one below`,
+      choices: ['Jest', 'Karma'],
+      default: 'Jest'
+    }).then(answers => (answers.testFramework ? resolve('jest') : reject()));
+  });
 }

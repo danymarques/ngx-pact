@@ -14,7 +14,10 @@ import {
 } from './utils/package';
 import { pactifyKarmaConf } from './utils/karma';
 import { pactifyJestConf } from './utils/jest';
-import { getProjetTestFramework } from './utils/project';
+import {
+  getProjetTestFramework,
+  promptForTestFramework
+} from './utils/project';
 
 const addPactConfigToPackageJSON = ({
   pactBinaryLocation,
@@ -51,8 +54,14 @@ const updateJestConfig = (options: Schema, context: SchematicContext) => {
 };
 
 export function ngAdd(options: Schema): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    const isJest = getProjetTestFramework(tree, options) === 'jest';
+  return async (tree: Tree, context: SchematicContext) => {
+    let isJest: boolean;
+
+    try {
+      isJest = getProjetTestFramework(tree, options) === 'jest';
+    } catch (e) {
+      isJest = (await promptForTestFramework()) === 'jest';
+    }
 
     return chain([
       options.pactBinaryLocation || options.pactDoNotTrack
@@ -60,6 +69,6 @@ export function ngAdd(options: Schema): Rule {
         : noop(),
       options.skipInstall ? noop() : updatePackageJSON(isJest),
       isJest ? updateJestConfig(options, context) : updateKarmaConfig(options)
-    ])(tree, context);
+    ]);
   };
 }

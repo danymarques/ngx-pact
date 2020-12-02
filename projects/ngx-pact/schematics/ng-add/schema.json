@@ -41,6 +41,10 @@
     "pactDoNotTrack": {
       "type": "boolean",
       "description": "In order to get better statistics as to who is using Pact, pact-node has an anonymous tracking event that triggers when Pact installs for the first time"
+    },
+    "testFramework": {
+      "enum": ["karma", "jest"],
+      "description": "The test framework used in the project."
     }
   }
 }
